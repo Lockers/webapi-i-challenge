@@ -1,6 +1,5 @@
 import React from 'react';
 import Styled from 'styled-components';
-import axios from 'axios';
 
 const Div = Styled.div`
     display: flex;
@@ -14,24 +13,24 @@ const Div = Styled.div`
 `
 
 export const User = (props) => {
-    const deleteUser = ( id ) => {
-        
-        axios
-            .delete(`http://localhost:8001/api/users/${id}`)
-            .then(res => {
-            console.log('Deleted')
-            })
-            .catch(err => {
-            console.log(err)
-            })
-        props.getUsers()
-    }
+    
     return (
         <Div>
+            <form onSubmit={(event) => props.updateUser(props.user.id)}>
+                <input
+                    type='text'
+                    name='name'
+                />
+                <input
+                    type='text'
+                    name='bio'
+                />
+                <button>Update User</button>
+            </form>
             <p>Name: {props.user.name}</p>
             <p>Bio: {props.user.bio}</p>
             <p>Date Created: {props.user.created_at}</p>
-            <button onClick={(event) => deleteUser(props.user.id)}>Delete</button>
+            <button onClick={(event) => props.deleteUser(props.user.id)}>Delete</button>
         </Div>
     )
 }

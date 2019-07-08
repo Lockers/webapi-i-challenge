@@ -23,8 +23,7 @@ server.get('/api/users/:id', (req, res) => {
     db.findById(req.params.id)
         .then(user => {
             if (user === undefined) {
-                res.status(404).json({ error: "The user with specified id does not exist" }).end()
-                return 1;
+                res.status(404).json({ error: "The user with specified id does not exist" })
             }
             res.status(200).json(user)
         })
@@ -37,54 +36,60 @@ server.post('/api/users', (req, res) => {
     const { name, bio } = req.body
     if (!name || !bio) {
         res.status(400).json({ errorMessage: "Please provide name and bio for user" })
-        return 1
     }
     db.insert({
         name,
         bio,
     })
-    .then(response => {
-            res.status(200).json(response)
-        })
+        .then(db.find()
+            .then(result => {
+                res.status(200).json(result)
+            }))
+    
         .catch(err => {
-            res.status(500).json(err, 'Got issues mate')
+            res.status(500).json({ err: "Got issues mate"})
         });
 });
 
 server.put('/api/users/:id', (req, res) => {
     const id = req.params.id;
-    const { name, bio } = req.body
-    if (!name || !bio) {
-        res.status(400).json({ errorMessage: "Please provide name and bio for user" })
-        return 1
+    const update = req.body
+    if (!update.name || !update.bio) {
+        res.status(404).json({err: 'You suck'})
     }
-    db.update(id, {name, bio})
+    db.findById(id)
         .then(user => {
-            if (findById(user) === 0) {
-                res.status(404).send( {err: "The user with specified id does not exist" }).end()
+            if (user === undefined) {
+                res.status(404).json({ err: 'User not found' })
             }
-            res.status(200).json(user)
-            
         })
+        .then(lol => {
+            db.update(id, update)
+        })
+        .then(lol => db.find()
+        .then(response => {
+            res.status(200).json(response)
+            }))
+           
         .catch(err => {
-            res.status(500).send( err, "The users information could not be retrieved" )
-        });
+            res.status(500).send({ err:"The users information could not be retrieved"} )
+        })
 
 })
 
 server.delete('/api/users/:id', (req, res) => {
     const id = req.params.id;
-    db.remove(id)
+    db.findById(id)
         .then(user => {
-            if (user === 0) {
-                res.status(404).send({err: "The user with specified id does not exist" })
-                return 1;
+            if (user === undefined) {
+                res.status(404).json({ err: 'User not found' })
             }
-            else {
-                res.status(200).json(user)
-            }
-            
         })
+        .then(db.remove(id)
+            .then(db.find()
+                .then(response => {
+                    res.status(204).json(response)
+            })))
         .catch(err => {
             res.status(500).send( err, "The users information could not be retrieved" )
         });
