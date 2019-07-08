@@ -17,7 +17,7 @@ export const User = (props) => {
     const deleteUser = ( id ) => {
         
         axios
-            .delete(`http://localhost:8000/api/users/${id}`)
+            .delete(`http://localhost:8001/api/users/${id}`)
             .then(res => {
             console.log('Deleted')
             })

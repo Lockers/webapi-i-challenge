@@ -11,7 +11,7 @@ class App extends React.Component {
   }
   getUsers = () => {
     axios
-      .get('http://localhost:8000/api/users/')
+      .get('http://localhost:8001/api/users/')
       .then(res => {
         const users = res.data;
         this.setState({ users })
@@ -20,9 +20,34 @@ class App extends React.Component {
         console.log(err)
       })
   }
+
+  createUsers = (event) => {
+    event.preventDefault()
+    const name = event.target['name'].value
+    const bio = event.target['bio'].value
+
+    const newUser = {
+      name,
+      bio
+    }
+    axios
+      .post('http://localhost:8001/api/users/', newUser)
+    .then(this.getUsers())
+  }
   render() {
     return (
       <div className="App">
+        <form onSubmit={this.createUsers}>
+          <input
+            type='text'
+            name='name'
+        />
+          <input
+            type='text'
+            name='bio'
+          />
+        <button>Add User</button>
+        </form>
         {this.state.users.map(user => { 
           return <User user={user} key={user.id} getUsers={this.getUsers} />
         })}
